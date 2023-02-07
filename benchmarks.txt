@@ -1,0 +1,175 @@
+Go vs Node
+
+Go webserver - gin(https://pkg.go.dev/github.com/gin-gonic/gin#section-readme)
+
+Node webserver - adonis(https://docs.adonisjs.com/guides/routing)
+
+
+Static file server:
+
+1. Small image
+wrk -t12 -c400 -d30s http://localhost:8080/courses/logo.png
+
+Golang: GOMAXPROCS is 4
+Running 30s test @ http://localhost:8080/courses/logo.png
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    15.43ms    6.24ms 110.91ms   73.47%
+    Req/Sec     1.29k   442.66     2.53k    61.69%
+  462583 requests in 30.02s, 206.02MB read
+  Socket errors: connect 158, read 95, write 0, timeout 0
+Requests/sec:  15410.01
+Transfer/sec:      6.86MB
+
+Golang: GOMAXPROCS is 2 - which is mostly like AWS server
+GOMAXPROCS=2 go run main.go
+Running 30s test @ http://localhost:8080/courses/logo.png
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    25.10ms    8.22ms 104.16ms   81.46%
+    Req/Sec   793.12    263.46     1.46k    61.81%
+  284308 requests in 30.03s, 126.62MB read
+  Socket errors: connect 158, read 97, write 0, timeout 0
+Requests/sec:   9468.64
+Transfer/sec:      4.22MB
+
+GOMAXPROCS=1
+Running 30s test @ http://localhost:8080/courses/logo.png
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    55.94ms   11.33ms 102.57ms   85.01%
+    Req/Sec   355.55    142.93   828.00     61.44%
+  127542 requests in 30.03s, 56.80MB read
+  Socket errors: connect 158, read 178, write 0, timeout 0
+Requests/sec:   4246.54
+Transfer/sec:      1.89MB
+
+
+wrk -t12 -c400 -d30s http://localhost:8080/logo.png
+Node:
+Running 30s test @ http://localhost:8080/logo.png
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    36.07ms    5.71ms 121.96ms   95.69%
+    Req/Sec   551.89    187.47     0.98k    62.83%
+  197928 requests in 30.05s, 103.44MB read
+  Socket errors: connect 158, read 182, write 0, timeout 0
+Requests/sec:   6586.00
+Transfer/sec:      3.44MB
+
+
+
+2. Large 2 Mb image
+wrk -t12 -c400 -d30s http://localhost:8080/courses/large.png
+
+Golang: GOMAXPROCS is 4
+Running 30s test @ http://localhost:8080/courses/large.png
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   179.35ms   66.78ms 352.50ms   76.60%
+    Req/Sec   110.60     50.88   280.00     68.83%
+  39722 requests in 30.10s, 71.64GB read
+  Socket errors: connect 158, read 97, write 0, timeout 0
+Requests/sec:   1319.73
+Transfer/sec:      2.38GB
+
+
+Golang: GOMAXPROCS is 2
+12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   165.86ms  117.90ms   1.66s    73.46%
+    Req/Sec   122.63     55.45   320.00     64.97%
+  43730 requests in 30.07s, 78.74GB read
+  Socket errors: connect 158, read 94, write 0, timeout 0
+Requests/sec:   1454.14
+Transfer/sec:      2.62GB
+
+GOMAXPROCS=1
+Running 30s test @ http://localhost:8080/courses/large.png
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   296.59ms  297.39ms   1.98s    86.35%
+    Req/Sec    71.29     40.97   340.00     65.77%
+  25349 requests in 30.09s, 45.64GB read
+  Socket errors: connect 158, read 101, write 0, timeout 11
+Requests/sec:    842.50
+Transfer/sec:      1.52GB
+
+
+
+wrk -t12 -c400 -d30s http://localhost:8080/large.png
+Node:
+Running 30s test @ http://localhost:8080/large.png
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   336.60ms   19.23ms 501.64ms   93.40%
+    Req/Sec    61.97     56.91   300.00     81.91%
+  21122 requests in 30.10s, 38.17GB read
+  Socket errors: connect 158, read 115, write 0, timeout 0
+Requests/sec:    701.63
+Transfer/sec:      1.27GB
+
+
+
+AWS S3 presigned links generation
+http://localhost:8080/presigned/denys/1660657070__.pdf
+
+wrk -t12 -c400 -d30s http://localhost:8080/presigned/denys/1660657070__.pdf
+
+GOMAXPROCS=8
+Running 30s test @ http://localhost:8080/presigned/denys/1660657070__.pdf
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    12.26ms   15.18ms 281.14ms   85.89%
+    Req/Sec     1.90k   824.71     4.51k    67.72%
+  680031 requests in 30.04s, 592.11MB read
+  Socket errors: connect 158, read 92, write 0, timeout 0
+Requests/sec:  22639.15
+Transfer/sec:     19.71MB
+
+GOMAXPROCS=4 go run main.go
+Running 30s test @ http://localhost:8080/presigned/denys/1660657070__.pdf
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    13.70ms   18.61ms 283.82ms   88.46%
+    Req/Sec     1.85k   809.97     4.72k    65.61%
+  663475 requests in 30.02s, 577.69MB read
+  Socket errors: connect 158, read 94, write 0, timeout 0
+Requests/sec:  22100.71
+Transfer/sec:     19.24MB
+
+GOMAXPROCS=2
+Running 30s test @ http://localhost:8080/presigned/denys/1660657070__.pdf
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    22.00ms   31.85ms 442.09ms   88.49%
+    Req/Sec     1.15k   496.50     3.17k    65.81%
+  412808 requests in 30.04s, 359.43MB read
+  Socket errors: connect 158, read 95, write 0, timeout 0
+Requests/sec:  13739.93
+Transfer/sec:     11.96MB
+
+GOMAXPROCS=1
+Running 30s test @ http://localhost:8080/presigned/denys/1660657070__.pdf
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    37.59ms   63.48ms   1.30s    97.44%
+    Req/Sec   634.83    256.72     1.61k    62.08%
+  227649 requests in 30.04s, 198.22MB read
+  Socket errors: connect 158, read 95, write 0, timeout 0
+Requests/sec:   7579.22
+Transfer/sec:      6.60MB
+
+
+
+Node:
+
+Running 30s test @ http://localhost:8080/presigned/denys/1660657070__.pdf
+  12 threads and 400 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency   334.39ms   40.12ms 776.10ms   91.38%
+    Req/Sec    61.14     32.52   191.00     73.03%
+  21215 requests in 30.05s, 20.78MB read
+  Socket errors: connect 158, read 92, write 0, timeout 0
+Requests/sec:    706.05
+Transfer/sec:    708.12KB

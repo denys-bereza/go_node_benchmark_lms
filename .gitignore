@@ -1,0 +1,39 @@
+
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Folders and content #
+#######################
+temp/*
+temp/chunks/*
+adminer/
+.vscode/
+*.idea/
+node_modules
+build*
+courses*
+
+
+# Keep empty folders #
+######################
+!temp/.gitkeep
+!temp/chunks/.gitkeep
+
+# Secrets #
+############################################
+.env
+
